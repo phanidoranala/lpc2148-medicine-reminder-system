@@ -5,6 +5,12 @@ The system allows users to set medicine timings and provides alerts using LCD me
 
 ---
 
+## Block Diagram
+
+![Block Diagram](block diagram.png)
+
+---
+
 ## Overview
 
 This project implements a real-time medicine reminder system using the LPC2148 microcontroller.  
@@ -51,6 +57,68 @@ The project is developed using the following software tools:
 - Embedded C Programming Language
 - Keil uVision IDE
 - Flash Magic
+
+---
+
+# Proteus Simulation
+
+## RTC Time Display
+
+![RTC Display](simulation1.png)
+
+This image shows the RTC displaying the current time and date on the LCD.  
+The system continuously reads time from the RTC registers and updates the display.
+
+---
+
+## Menu Display
+
+![Menu Display](simulation2.png)
+
+When **Switch 1 (EINT0)** is pressed, the menu appears on the LCD.  
+The menu allows the user to configure:
+
+```
+1.TIME
+2.DAY
+3.MED
+4.EXIT
+```
+
+The keypad is used to select these options.
+
+---
+
+## Next Medicine Display
+
+![Next Medicine](simulation3.png)
+
+After configuring medicine timings, the system calculates the next scheduled medicine time.  
+The LCD displays the **next medicine reminder time**.
+
+---
+
+## Medicine Reminder Alert
+
+![Medicine Alert](simulation4.png)
+
+When the RTC time matches a configured medicine schedule:
+
+- LCD displays **TAKE MED X**
+- Buzzer or LED alert is activated
+- The system waits for user acknowledgement
+
+---
+
+## Medicine Acknowledgement
+
+![Medicine Taken](simulation5.png)
+
+When the user presses **Switch 2 (EINT1)**:
+
+- The alert stops
+- LCD displays **MED X TAKEN**
+- System resumes monitoring for the next medicine time
 
 ---
 
@@ -131,10 +199,10 @@ The system waits for user acknowledgement.
 The user presses **Switch 2 (EINT1)** to confirm medicine intake.
 
 After acknowledgement:
+
 - Buzzer or LED is turned OFF
 - LCD displays **MED X TAKEN**
-
-The system then displays the next scheduled medicine time.
+- The system shows the next scheduled medicine time
 
 ---
 
@@ -209,7 +277,6 @@ delay.h
 Phani Doranala  
 Embedded Systems Project  
 LPC2148 Medicine Reminder System
-
 ---
 
 
