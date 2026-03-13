@@ -7,7 +7,7 @@ The system allows users to set medicine timings and provides alerts using LCD me
 
 ## Block Diagram
 
-![Block Diagram](block diagram.png)
+![Block Diagram](blockdiagram.png)
 
 ---
 
