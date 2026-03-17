@@ -1,186 +1,112 @@
-#include <lpc214x.h>
-#include "lcd_defines.h"
-#include "lcd.h"
-#include "delay.h"
+#include <lpc214x.h>        // LPC2148 register definitions
+#include "lcd_defines.h"    // LCD command and pin definitions
+#include "lcd.h"            // LCD function declarations
+#include "delay.h"          // Delay functions for timing control
 
-// initialize lcd and configure display mode
-// sets lcd to 8-bit and 2 line display
+// Function: Init_LCD
+// Purpose : Initialize the LCD module
+// Reason  : LCD requires a specific initialization sequence to work properly
+//           This function configures pins and sets LCD to 8-bit 2-line mode
 void Init_LCD(void)
 {
-        IODIR0 |= 0xFF << LCD_DATA;
-        IODIR0 |= 1 << RS;
-        IODIR0 |= 1 << RW;
-        IODIR0 |= 1 << EN;
-
-        delay_ms(15);
-
-        Cmd_LCD(MODE_8BIT_1LINE);
-        delay_ms(5);
-        Cmd_LCD(MODE_8BIT_1LINE);
-        delay_us(100);
-        Cmd_LCD(MODE_8BIT_1LINE);
-
-        Cmd_LCD(MODE_8BIT_2LINE);
-        //Cmd_LCD(DISP_ON_CUR_ON);
-        Cmd_LCD(DISP_ON);
-        Cmd_LCD(CLEAR_LCD);
-        Cmd_LCD(SHIFT_CUR_RIGHT);
+        IODIR0 |= 0xFF << LCD_DATA;   // Set LCD data pins (D0-D7) as output
+        IODIR0 |= 1 << RS;            // Set RS pin as output (Register Select)
+        IODIR0 |= 1 << RW;            // Set RW pin as output (Read/Write control)
+        IODIR0 |= 1 << EN;            // Set EN pin as output (Enable signal)
+        delay_ms(15);                 // Wait for LCD power stabilization
+        Cmd_LCD(MODE_8BIT_1LINE);     // Send command to set 8-bit mode and 1-line display
+        delay_ms(5);                  // Delay for command processing
+        Cmd_LCD(MODE_8BIT_1LINE);     // Repeat command as required by LCD initialization
+        delay_us(100);                // Small delay
+        Cmd_LCD(MODE_8BIT_1LINE);     // Repeat again to ensure proper initialization
+        Cmd_LCD(MODE_8BIT_2LINE);     // Set LCD to 8-bit mode with 2 display lines
+        //Cmd_LCD(DISP_ON_CUR_ON);    // Optional: turn display ON with cursor
+        Cmd_LCD(DISP_ON);             // Turn display ON without cursor
+        Cmd_LCD(CLEAR_LCD);           // Clear LCD screen
+        Cmd_LCD(SHIFT_CUR_RIGHT);     // Cursor automatically moves right after each character
 }
 
-// send command to lcd
+// Function: Cmd_LCD
+// Purpose : Send command instruction to LCD
+// Reason  : Commands control LCD operations like clear display, cursor move etc.
 void Cmd_LCD(char cmd)
 {
-        IOCLR0 = 1 << RS;
-        Write_LCD(cmd);
+        IOCLR0 = 1 << RS;     // RS = 0 ? Select command register
+        Write_LCD(cmd);       // Send command to LCD
 }
 
-// write data or command to lcd
-// generates enable pulse for lcd
+// Function: Write_LCD
+// Purpose : Write data or command to LCD
+// Reason  : LCD requires an enable pulse to latch data or command
 void Write_LCD(char data)
 {
-        IOCLR0 = 1 << RW;
-
+        IOCLR0 = 1 << RW;       // RW = 0 ? Write operation
+        // Clear old data bits and place new data on LCD data lines
         IOPIN0 = IOPIN0 & ~(0xFF << LCD_DATA) | data << LCD_DATA;
-
-        IOSET0 = 1 << EN;
-        delay_us(1);
-        IOCLR0 = 1 << EN;
-
-        delay_ms(2);
+        IOSET0 = 1 << EN;       // Set EN high to start enable pulse
+        delay_us(1);            // Small delay so LCD can read data
+        IOCLR0 = 1 << EN;       // Set EN low ? data latched by LCD
+        delay_ms(2);            // Wait for LCD to complete operation
 }
 
-// display single character on lcd
+
+// Function: Char_LCD
+// Purpose : Display a single character on LCD
+// Reason  : LCD displays characters one at a time
 void Char_LCD(char ch)
 {
-        IOSET0 = 1 << RS;
-        Write_LCD(ch);
+        IOSET0 = 1 << RS;      // RS = 1 ? Select data register
+
+        Write_LCD(ch);         // Send character to LCD
 }
 
-// display string on lcd
-// prints characters until null character
+// Function: Str_LCD
+// Purpose : Display a string on LCD
+// Reason  : Simplifies printing multiple characters
 void Str_LCD(char * p)
 {
-        while(*p)
+        while(*p)              // Loop until null character '\0'
         {
-                Char_LCD(*p++);
+                Char_LCD(*p++);   // Display character and move pointer to next
         }
 }
 
-// display unsigned integer on lcd
-// converts number into characters
+// Function: Uint_LCD
+// Purpose : Display unsigned integer on LCD
+// Reason  : LCD can only display characters, so numbers must be converted to ASCII
 void Uint_LCD(unsigned int n)
 {
-        char a[10];
-        int i = 0;
+        char a[10];           // Array to store digits
+        int i = 0;            // Index variable
 
-        if( n == 0)
+        if( n == 0)           // If number is zero
         {
-                Char_LCD('0');
+                Char_LCD('0'); // Directly display '0'
         }
         else
         {
-                /* store digits in reverse order
-                   then display in correct order */
+                // Extract digits and store in reverse order
                 while(n)
                 {
-                        a[i++] = (n%10) + 48;
-                        n/=10;
+                        a[i++] = (n%10) + 48;   // Convert digit to ASCII
+                        n/=10;                  // Remove last digit
                 }
 
+                // Display digits in correct order
                 for(--i; i >= 0; i--)
                         Char_LCD(a[i]);
         }
 }
 
-// display signed integer on lcd
+// Function: Sint_LCD
+// Purpose : Display signed integer on LCD
+// Reason  : Handles negative numbers
 void Sint_LCD(int n)
 {
-        if(n<0)
+        if(n<0)              // Check if number is negative
         {
-                Char_LCD('-');
-                n=-n;
-                Uint_LCD(n);
+                Char_LCD('-'); // Display minus sign
+                n=-n;          // Convert negative number to positive
+                Uint_LCD(n);   // Display number using unsigned function
         }
 }
-
-// display floating point value
-// prints required decimal points
-void Float_LCD(float num,char nDP)
-{
-        unsigned int n;
-        int i;
-
-        if(num < 0)
-        {
-                Char_LCD('-');
-        }
-
-        n = num;
-
-        Uint_LCD(n);
-        Char_LCD('.');
-
-        for(i=0; i < nDP; i++)
-        {
-                num = (num - n)*10;
-                n = num;
-                Char_LCD(n+48);
-        }
-}
-
-// display hexadecimal value on lcd
-void Hex_LCD(unsigned int n)
-{
-        char a[8],rem;
-        int i=0;
-
-        if(n == 0)
-        {
-                Char_LCD('0');
-        }
-        else
-        {
-                /* convert number to hex digits
-                   store in reverse order */
-                while(n)
-                {
-                        rem = n % 16;
-                        (rem < 10)?(rem+=48):(rem+=55);
-                        a[i++]=rem;
-                        n/=16;
-                }
-
-                for(--i; i >= 0; i--)
-                {
-                        Char_LCD(a[i]);
-                }
-        }
-}
-
-// display binary value on lcd
-// prints specified number of bits
-void Bin_LCD(unsigned int n, char nBB)
-{
-        int i;
-
-        for(i=(nBB-1); i >= 0; i--)
-        {
-                Char_LCD(((n>>i)&1)+48);
-        }
-}
-
-// create custom character in lcd cgram
-void Build_CGRAM(char *p,char nb)
-{
-        int i;
-
-        Cmd_LCD(GOTO_CGRAM);
-
-        for(i=0; i <=nb;i++)
-        {
-                Char_LCD(p[i]);
-        }
-
-        Cmd_LCD(GOTO_LINE1_POS0);
-}
-
