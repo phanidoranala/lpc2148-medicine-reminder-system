@@ -71,37 +71,37 @@ The system works based on real-time comparison between RTC time and stored medic
 
 ## RTC Time Display
 
-![RTC](simulation4.png)
+![RTC](simulation04.png)
 
 ---
 
 ## Menu Display
 
-![Menu](simulation1.png)
+![Menu](simulation01.png)
 
 ---
 
 ## Invalid Input
 
-![Invalid](simulation2.png)
+![Invalid](simulation02.png)
 
 ---
 
 ## Next Medicine
 
-![Next](simulation7.png)
+![Next](simulation07.png)
 
 ---
 
 ## Medicine Alert
 
-![Alert](simulation5.png)
+![Alert](simulation05.png)
 
 ---
 
 ## Acknowledgement
 
-![Taken](simulation6.png)
+![Taken](simulation06.png)
 
 ---
 
