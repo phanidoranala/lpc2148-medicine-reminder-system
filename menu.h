@@ -1,6 +1,8 @@
-#ifndef MENU_H
-#define MENU_H
+#ifndef MENU_H              // check if MENU_H is already defined
+#define MENU_H              // define MENU_H to prevent multiple inclusion
+// function prototype for menu setup
+void Menu_Setup(void);     // displays configuration menu and handles user selections
 
-void Menu_Setup(void);
+#endif                     // end of header guard
 
-#endif
+
