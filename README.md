@@ -7,7 +7,7 @@ The system allows users to set medicine timings and provides alerts using LCD me
 
 ## Block Diagram
 
-![Block Diagram](images/blockdiagram.png)
+![Block Diagram](blockdiagram.png)
 
 ---
 
@@ -24,60 +24,46 @@ Users can configure the system through a 4x4 matrix keypad interface. The system
 
 ## Working Principle
 
-The system works based on **continuous real-time comparison** between RTC time and stored medicine schedules.
+The system works based on real-time comparison between RTC time and stored medicine schedules.
 
 1. RTC continuously updates time
 2. User sets medicine timings
 3. System compares both values
-4. If match occurs → Alert is triggered
+4. If match occurs → Alert triggered
 5. User acknowledges → System resets
 
 ---
 
-## RTC (Real Time Clock)
+## Features
 
-The LPC2148 has an inbuilt RTC module:
-
-* Maintains time using 32.768 kHz clock
-* Stores time in registers (SEC, MIN, HOUR, etc.)
-* Works independently of CPU
-
----
-
-## LCD Interfacing
-
-A 16x2 LCD is used to display:
-
-* Time & Date
-* Menu
-* Alerts
-
-Operates in **4-bit mode** to save pins.
+* RTC based monitoring
+* LCD display (time/date/alerts)
+* User configurable medicine schedule
+* 4x4 keypad input
+* Buzzer/LED alert
+* Interrupt-based control
+* Menu-driven system
+* Timeout protection
+* Multiple medicine support
 
 ---
 
-## Keypad Interfacing
+## Hardware Components
 
-4x4 matrix keypad works using:
-
-* Row-column scanning
-* Detects pressed key by intersection
-
-Used for:
-
-* Menu selection
-* Time input
+* LPC2148 Microcontroller
+* 16x2 LCD
+* 4x4 Keypad
+* Buzzer/LED
+* Push Buttons
+* Power Supply
 
 ---
 
-## Interrupts Used
+## Software Tools
 
-| Interrupt | Function          |
-| --------- | ----------------- |
-| EINT0     | Open menu         |
-| EINT1     | Acknowledge alert |
-
-Interrupts provide **fast response without polling**.
+* Embedded C
+* Keil uVision
+* Flash Magic
 
 ---
 
@@ -85,51 +71,37 @@ Interrupts provide **fast response without polling**.
 
 ## RTC Time Display
 
-![RTC](images/simulation04.png)
-
-Displays current time and date from RTC.
+![RTC](simulation4.png)
 
 ---
 
 ## Menu Display
 
-![Menu](images/simulation01.png)
-
-Appears when **SW1 (EINT0)** is pressed.
+![Menu](simulation1.png)
 
 ---
 
-## Invalid Input Handling
+## Invalid Input
 
-![Invalid](images/simulation02.png)
-
-Displays error for wrong input.
+![Invalid](simulation2.png)
 
 ---
 
-## Next Medicine Display
+## Next Medicine
 
-![Next](images/simulation07.png)
-
-Shows next scheduled medicine.
+![Next](simulation7.png)
 
 ---
 
 ## Medicine Alert
 
-![Alert](images/simulation05.png)
-
-* LCD shows **TAKE MED X**
-* Buzzer/LED activated
+![Alert](simulation5.png)
 
 ---
 
-## Medicine Acknowledgement
+## Acknowledgement
 
-![Taken](images/simulation06.png)
-
-* Alert stops
-* Displays **MED X TAKEN**
+![Taken](simulation6.png)
 
 ---
 
@@ -137,15 +109,15 @@ Shows next scheduled medicine.
 
 ### Initialization
 
-* RTC, LCD, Keypad initialized
+* RTC, LCD, Keypad, Interrupts initialized
 
-### Menu Access
+### Menu
 
-* SW1 → Open menu
+* Press **SW1 (EINT0)**
 
 ### Scheduling
 
-* User enters time
+* Enter time via keypad
 
 ### Monitoring
 
@@ -153,29 +125,20 @@ Shows next scheduled medicine.
 
 ### Alert
 
-* Triggered on match
+* LCD + buzzer ON
 
-### Acknowledgement
+### Acknowledge
 
-* SW2 → Stops alert
-
----
-
-## Advantages
-
-* Accurate real-time monitoring
-* Low power consumption
-* User-friendly interface
-* Interrupt-based fast response
+* Press **SW2 (EINT1)**
 
 ---
 
-## Applications
+## Interrupts
 
-* Medicine reminder systems
-* Elderly care
-* Smart healthcare devices
-* Embedded alert systems
+| Interrupt | Function    |
+| --------- | ----------- |
+| EINT0     | Menu        |
+| EINT1     | Acknowledge |
 
 ---
 
